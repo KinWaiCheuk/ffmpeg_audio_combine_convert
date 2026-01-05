@@ -95,7 +95,7 @@ if !file_count! GTR 0 (
 
 echo.
 echo ========================================
-echo Done! Processed !batch_num! batches.
+echo Done. Processed !batch_num! batches.
 echo Output files are in: %OUTPUT_FOLDER%
 echo ========================================
 echo.

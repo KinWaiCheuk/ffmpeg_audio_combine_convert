@@ -65,7 +65,7 @@ echo.
 
 :: Loop through all MP3 files
 for %%F in ("%INPUT_FOLDER%\*.mp3") do (
-    echo file '%%F' >> "%LIST_FILE%"
+    echo file '%%F' >> "!LIST_FILE!"
     
     :: Calculate timestamp (assuming 5 seconds per file)
     set /a minutes=!total_seconds! / 60
@@ -76,20 +76,20 @@ for %%F in ("%INPUT_FOLDER%\*.mp3") do (
     if !minutes! LSS 10 (set minutes=0!minutes!)
     
     :: Write to timestamp file
-    echo [!minutes!:!seconds!] %%~nxF >> "%TIMESTAMP_FILE%"
+    echo [!minutes!:!seconds!] %%~nxF >> "!TIMESTAMP_FILE!"
     
     set /a file_count+=1
     set /a total_seconds+=5
     
     :: When we reach BATCH_SIZE files, combine them
     if !file_count! == %BATCH_SIZE% (
-        echo. >> "%TIMESTAMP_FILE%"
-        echo Total duration: !minutes!:!seconds! >> "%TIMESTAMP_FILE%"
+        echo. >> "!TIMESTAMP_FILE!"
+        echo Total duration: !minutes!:!seconds! >> "!TIMESTAMP_FILE!"
         
         echo Processing batch !batch_num! ^(!file_count! files^)...
         
         :: Combine files (mono)
-        ffmpeg -y -f concat -safe 0 -i "%LIST_FILE%" -c copy "%OUTPUT_FOLDER%\batch_!batch_num!_mono.mp3" -loglevel error
+        ffmpeg -y -f concat -safe 0 -i "!LIST_FILE!" -c copy "%OUTPUT_FOLDER%\batch_!batch_num!_mono.mp3" -loglevel error
         
         :: Convert to stereo
         ffmpeg -y -i "%OUTPUT_FOLDER%\batch_!batch_num!_mono.mp3" -ac 2 "%OUTPUT_FOLDER%\batch_!batch_num!_stereo.mp3" -loglevel error
@@ -120,11 +120,11 @@ if !file_count! GTR 0 (
     if !seconds! LSS 10 (set seconds=0!seconds!)
     if !minutes! LSS 10 (set minutes=0!minutes!)
     
-    echo. >> "%TIMESTAMP_FILE%"
-    echo Total duration: !minutes!:!seconds! >> "%TIMESTAMP_FILE%"
+    echo. >> "!TIMESTAMP_FILE!"
+    echo Total duration: !minutes!:!seconds! >> "!TIMESTAMP_FILE!"
     
     echo Processing final batch !batch_num! ^(!file_count! files^)...
-    ffmpeg -y -f concat -safe 0 -i "%LIST_FILE%" -c copy "%OUTPUT_FOLDER%\batch_!batch_num!_mono.mp3" -loglevel error
+    ffmpeg -y -f concat -safe 0 -i "!LIST_FILE!" -c copy "%OUTPUT_FOLDER%\batch_!batch_num!_mono.mp3" -loglevel error
     ffmpeg -y -i "%OUTPUT_FOLDER%\batch_!batch_num!_mono.mp3" -ac 2 "%OUTPUT_FOLDER%\batch_!batch_num!_stereo.mp3" -loglevel error
     del "%OUTPUT_FOLDER%\batch_!batch_num!_mono.mp3"
     echo Final batch complete.
